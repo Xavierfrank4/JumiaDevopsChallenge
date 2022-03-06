@@ -1,0 +1,11 @@
+version: '2'
+services:
+    backend:
+         image: "validator-backend"
+         ports:
+           - "8080:8080"
+       
+    frontend:
+         image: "validator-frontend"
+         ports:
+            - 8081:8081
