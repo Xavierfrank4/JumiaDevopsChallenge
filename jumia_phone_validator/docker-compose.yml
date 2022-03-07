@@ -1,11 +1,13 @@
 version: '2'
 services:
     backend:
-         image: "validator-backend"
+         image: "thepsalmist/validator-backend-image"
          ports:
            - "8080:8080"
        
     frontend:
-         image: "validator-frontend"
+         image: "thepsalmist/validator-frontend-image"
          ports:
             - 8081:8081
+
+            

@@ -1,10 +1,7 @@
 #!/bin/bash
-
-apt-get update
-apt-get install apt-transport-https wget gnupg
-apt-add-repository ppa:ansible/ansible
-apt-get update
-apt-get install ansible
-
-sudo sed -i 's/22/${ssh_port}/g' /etc/ssh/sshd_config
-sudo service ssh restart
+sudo perl -pi -e 's/^#?Port 22$/Port 1337/' /etc/ssh/sshd_config
+sudo service sshd restart 
+sudo apt update
+sudo apt install software-properties-common
+sudo add-apt-repository --yes --update ppa:ansible/ansible
+sudo apt install ansible
