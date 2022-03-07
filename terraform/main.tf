@@ -48,6 +48,7 @@ resource "aws_subnet" "application-public-subnet" {
 }
 
 # Create Custom Route Table
+
 resource "aws_route_table" "jumia-route-table" {
   vpc_id = aws_vpc.jumia_vpc.id
 
@@ -62,9 +63,89 @@ resource "aws_route_table" "jumia-route-table" {
 }
 
 # Associate Public Subnet with Route Table
-resource "aws_route_table_association" "a" {
+resource "aws_route_table_association" "rt_association" {
   count          = var.item_count
   subnet_id      = aws_subnet.jumia-public-subnet[count.index].id
   route_table_id = aws_route_table.jumia-route-table.id
+
+}
+
+# Create Web Security Group
+resource "aws_security_group" "allow_web_traffic" {
+  name        = "allow_web_traffic"
+  description = "Allow HTTP inbound traffic"
+  vpc_id      = aws_vpc.jumia_vpc.id
+
+  ingress {
+    description = "HTTP from VPC"
+    from_port   = 80
+    tp_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+
+  }
+
+  ingress {
+    description = "HTTPS from VPC"
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    description = "Allow SSH"
+    from_port   = 1337
+    to_port     = 1337
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "allow_web"
+  }
+
+}
+
+# Create Microservice Security Group
+resource "aws_security_group" "microservice_sg" {
+  name        = "microservice_sg"
+  description = "Allow TCP inbound traffic from ALB"
+  vpc_id      = aws_vpc.jumia_vpc.id
+
+  ingress {
+    description     = "HTTP from ALB"
+    from_port       = 80
+    tp_port         = 80
+    protocol        = "tcp"
+    security_groups = [aws_security_group.allow_web_traffic.id]
+
+  }
+
+  ingress {
+    description = "Allow SSH"
+    from_port   = 1337
+    to_port     = 1337
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "microservice"
+  }
 
 }
