@@ -52,3 +52,8 @@ variable "instance_type" {
   type        = string
   default     = "t2.micro"
 }
+
+#AWS Key
+variable "aws_key_pair" {
+  default = "~/aws/aws_keys/terraform.pem"
+}

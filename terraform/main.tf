@@ -149,3 +149,28 @@ resource "aws_security_group" "microservice_sg" {
   }
 
 }
+
+# Create EC2 Instances
+
+resource "aws_instance" "microservice_app" {
+  count                  = var.item_count
+  ami                    = var.ami_id
+  key_name               = "terraform"
+  instance_type          = var.instance_type
+  availability_zone      = var.availability_zone_names[count.index]
+  vpc_security_group_ids = [aws_security_group.microservice_sg.id]
+  subnet_id              = aws_subnet.jumia-public-subnet[count.index].id
+  user_data              = file("user_data.sh")
+
+  connection {
+    type        = "ssh"
+    host        = self.public_ip
+    user        = "ubuntu"
+    private_key = file(var.aws_key_pair)
+  }
+
+  tags = {
+    Name = "Application_Server_${count.index + 1}"
+  }
+
+}
