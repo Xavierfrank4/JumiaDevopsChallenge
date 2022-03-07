@@ -79,7 +79,7 @@ resource "aws_security_group" "allow_web_traffic" {
   ingress {
     description = "HTTP from VPC"
     from_port   = 80
-    tp_port     = 80
+    to_port     = 80
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
 
@@ -123,7 +123,7 @@ resource "aws_security_group" "microservice_sg" {
   ingress {
     description     = "HTTP from ALB"
     from_port       = 80
-    tp_port         = 80
+    to_port         = 80
     protocol        = "tcp"
     security_groups = [aws_security_group.allow_web_traffic.id]
 
