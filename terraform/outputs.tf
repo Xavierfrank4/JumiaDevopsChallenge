@@ -3,8 +3,14 @@ output "lb_dns_name" {
   value       = aws_lb.external-elb.dns_name
 }
 
-output "ec2instance" {
-  description = "The Public IP of EC2 Instances"
+output "ec2instance_1" {
+  description = "The Public IP of EC2 Instance 1"
   value       = aws_instance.microservice_app[0].public_ip
+
+}
+
+output "ec2instance_2" {
+  description = "The Public IP of EC2 Instance 2"
+  value       = aws_instance.microservice_app[1].public_ip
 
 }
