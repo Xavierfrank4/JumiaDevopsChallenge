@@ -1,4 +1,6 @@
 [web_servers]
-13.40.130.228 ansible_port=1337 ansible_ssh_user=ubuntu ansible_become=true
+3.8.236.93 ansible_port=1337 ansible_ssh_user=ubuntu ansible_become=true
+35.176.99.124 ansible_port=1337 ansible_ssh_user=ubuntu ansible_become=true
 
 [db_servers]
+13.40.57.16 ansible_port=1337 ansible_ssh_user=ubuntu ansible_become=true
