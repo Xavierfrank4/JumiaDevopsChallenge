@@ -1,6 +1,7 @@
-db_user=jumia
-db_password=utf8@1234
-db_name=jumia_phone_validator
+db_user: jumia
+db_password: utf8@1234
+db_name: jumia_phone_validator
 
-create_user=xavier
-sys_packages = ["curl","vim","git","ufw"]
+new_user: xavier
+copy_local_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCtFD4u1Re/8fCRwmbxpdxPK/f4T7FtAnT9BGUq8cFFSu23OBvJWYLpavyNMpI7SHAr2wAcF+7K29YdAc+EZOqJIaWvwELNsjfBwWCxP+zwNnR/3VKxlQEjoQTY2ccLJyrOSY1Z4SQkrIgr/m2zl0PWGMxKDPwCdjG8p8fWDukbELkizHvA1PYCS0Vplooucqk81tl2KPCMqBciwfiWBJnWl/7O2DB4b5bHECKYRrjDcr9Qtzj1INLajH+pkWtXswhbnrIlarUpoN+iQFIOceYUcZBUAorC9S72AadG0MTCFDQAdhYHjFj/Ju9bThXFrNK/g5TGc/n008y3ODQ+9TpWZFbinuw263lHzOeatlETcv5ruU+7IS6Mb1PJTl9Rva/Fn6oP4G0ixL9fUDHm828OOZnA1u+U3RvBC1tFANIrtvkvrhGnY/if//Q/KtSfuBTBY7wYj5wHlToI241GZ7UtVJBkzAJF9wfqEAD+CCmh/C/2fUvC6Ac/aU7Td22R5vc= thealchemist@thealchemist-HP-EliteBook-840-G1"
+sys_packages: ["curl", "vim", "git", "ufw"]

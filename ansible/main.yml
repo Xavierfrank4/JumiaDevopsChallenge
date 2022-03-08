@@ -1,9 +1,48 @@
 ---
 - hosts: all
   become: yes
+  gather_facts: false
 
   vars_files:
     - vars.yml
 
   tasks:
-    - name: Install
+    - name: Install Updates
+      apt:
+        upgrade: dist
+        update_cache: yes
+
+    # Setup Sudo group
+    - name: Make sure 'wheel' group exists
+      group:
+        name: wheel
+        state: present
+
+    - name: Allow 'wheel' group sudo privileges without passwor
+      lineinfile:
+        path: /etc/sudoers
+        state: present
+        regexp: "^%wheel"
+        line: "%wheel ALL=(ALL) NOPASSWD: ALL"
+        validate: "/usr/sbin/visudo -cf %s"
+
+    #Create New User
+    - name: Create new user and add assign sudo privileges
+      user:
+        name: "{{ new_user }}"
+        groups: wheel
+        append: true
+        create_home: true
+        shell: /bin/bash
+
+    - name: Disable password authentication root
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        state: present
+        regexp: "^#?PermissionRootLogin"
+        line: "PermitRootLogin prohibit-password"
+
+    - name: Install required system packages
+      apt:
+        name: "{{ sys_packages }}"
+        state: latest
