@@ -1,0 +1,30 @@
+- name: Ensure Nginx is installed and it is the latest version
+  apt:
+    name: nginx
+    state: latest
+  become: yes
+
+- name: Start Nginx
+  service:
+    name: nginx
+    state: started
+  become: yes
+
+- name: Copy the Nginx config file and restart nginx
+  copy:
+    src: ./nginx.cfg
+    dest: /etc/nginx/sites-available/nginx.cfg
+  become: yes
+
+- name: Create symlink
+  file:
+    src: /etc/nginx/sites-available/nginx.cfg
+    dest: /etc/nginx/sites-enabled/default
+    state: link
+  become: yes
+
+- name: Restart nginx
+  service:
+    name: nginx
+    state: restarted
+  become: yes
