@@ -47,6 +47,19 @@ resource "aws_subnet" "application-public-subnet" {
   }
 }
 
+# Create Database Public Subnet
+resource "aws_subnet" "database-subnet" {
+  vpc_id                  = aws_vpc.jumia_vpc.id
+  cidr_block              = var.database_subnet_cidr
+  availability_zone       = var.availability_zone_names[0]
+  map_public_ip_on_launch = true
+
+  tags = {
+    Name = "Database-Subnet"
+  }
+}
+
+
 # Create Custom Route Table
 
 resource "aws_route_table" "jumia-route-table" {
@@ -66,6 +79,13 @@ resource "aws_route_table" "jumia-route-table" {
 resource "aws_route_table_association" "rt_association" {
   count          = var.item_count
   subnet_id      = aws_subnet.jumia-public-subnet[count.index].id
+  route_table_id = aws_route_table.jumia-route-table.id
+
+}
+
+# Associate Database Subnet with Route Table
+resource "aws_route_table_association" "db_rt_association" {
+  subnet_id      = aws_subnet.database-subnet.id
   route_table_id = aws_route_table.jumia-route-table.id
 
 }
@@ -175,6 +195,7 @@ resource "aws_instance" "microservice_app" {
 
 }
 
+
 #Create Database Security Group
 resource "aws_security_group" "rds_sg" {
   name        = "rds_sg"
@@ -206,6 +227,31 @@ resource "aws_security_group" "rds_sg" {
 
   tags = {
     Name = "RDS_Database_SG"
+  }
+
+}
+
+
+#Create EC2 Database Instance
+
+resource "aws_instance" "database" {
+  ami                    = var.ami_id
+  key_name               = "terraform"
+  instance_type          = var.instance_type
+  availability_zone      = var.availability_zone_names[0]
+  vpc_security_group_ids = [aws_security_group.rds_sg.id]
+  subnet_id              = aws_subnet.database-subnet.id
+  user_data              = file("user_data.sh")
+
+  connection {
+    type        = "ssh"
+    host        = self.public_ip
+    user        = "ubuntu"
+    private_key = file(var.aws_key_pair)
+  }
+
+  tags = {
+    Name = "Database_Server"
   }
 
 }

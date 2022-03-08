@@ -14,3 +14,8 @@ output "ec2instance_2" {
   value       = aws_instance.microservice_app[1].public_ip
 
 }
+
+output "dbinstance" {
+  description = "The Database Server Public IP"
+  value       = aws_instance.database.public_ip
+}
