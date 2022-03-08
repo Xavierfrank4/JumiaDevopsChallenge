@@ -226,7 +226,7 @@ resource "aws_lb_target_group_attachment" "external-elb" {
   port             = 80
 
   depends_on = [
-    aws_instance.webserver[1]
+    aws_instance.microservice_app[1]
   ]
 }
 
