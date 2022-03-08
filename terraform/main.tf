@@ -19,31 +19,29 @@ resource "aws_internet_gateway" "main_igw" {
   }
 }
 
-# Create Two Public Subnets
+# Create A Public Subnets
 
 resource "aws_subnet" "jumia-public-subnet" {
-  count                   = var.item_count
   vpc_id                  = aws_vpc.jumia_vpc.id
-  cidr_block              = var.public_subnet_cidr[count.index]
-  availability_zone       = var.availability_zone_names[count.index]
+  cidr_block              = var.public_subnet_cidr
+  availability_zone       = var.availability_zone_names
   map_public_ip_on_launch = true
 
   tags = {
-    Name = "public_${count.index + 1}"
+    Name = "public_subnet"
   }
 }
 
 # Create Application Public Subnet
 
-resource "aws_subnet" "application-public-subnet" {
-  count                   = var.item_count
+resource "aws_subnet" "application-subnet" {
   vpc_id                  = aws_vpc.jumia_vpc.id
-  cidr_block              = var.application_subnet_cidr[count.index]
-  availability_zone       = var.availability_zone_names[count.index]
+  cidr_block              = var.application_subnet_cidr
+  availability_zone       = var.availability_zone_names
   map_public_ip_on_launch = false
 
   tags = {
-    Name = "application_${count.index + 1}"
+    Name = "application_subnet"
   }
 }
 
@@ -51,7 +49,7 @@ resource "aws_subnet" "application-public-subnet" {
 resource "aws_subnet" "database-subnet" {
   vpc_id                  = aws_vpc.jumia_vpc.id
   cidr_block              = var.database_subnet_cidr
-  availability_zone       = var.availability_zone_names[0]
+  availability_zone       = var.availability_zone_names
   map_public_ip_on_launch = true
 
   tags = {
@@ -77,8 +75,7 @@ resource "aws_route_table" "jumia-route-table" {
 
 # Associate Public Subnet with Route Table
 resource "aws_route_table_association" "rt_association" {
-  count          = var.item_count
-  subnet_id      = aws_subnet.jumia-public-subnet[count.index].id
+  subnet_id      = aws_subnet.jumia-public-subnet.id
   route_table_id = aws_route_table.jumia-route-table.id
 
 }
@@ -97,7 +94,7 @@ resource "aws_security_group" "allow_web_traffic" {
   vpc_id      = aws_vpc.jumia_vpc.id
 
   ingress {
-    description = "HTTP from VPC"
+    description = "HTTP from Everywhere"
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
@@ -106,7 +103,7 @@ resource "aws_security_group" "allow_web_traffic" {
   }
 
   ingress {
-    description = "HTTPS from VPC"
+    description = "HTTPS from Everywhere"
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
@@ -114,7 +111,7 @@ resource "aws_security_group" "allow_web_traffic" {
   }
 
   ingress {
-    description = "Allow SSH"
+    description = "Allow SSH from Everywhere"
     from_port   = 1337
     to_port     = 1337
     protocol    = "tcp"
@@ -173,13 +170,12 @@ resource "aws_security_group" "microservice_sg" {
 # Create EC2 Instances
 
 resource "aws_instance" "microservice_app" {
-  count                  = var.item_count
   ami                    = var.ami_id
   key_name               = "terraform"
   instance_type          = var.instance_type
-  availability_zone      = var.availability_zone_names[count.index]
+  availability_zone      = var.availability_zone_names
   vpc_security_group_ids = [aws_security_group.microservice_sg.id]
-  subnet_id              = aws_subnet.jumia-public-subnet[count.index].id
+  subnet_id              = aws_subnet.jumia-public-subnet.id
   user_data              = file("user_data.sh")
 
   connection {
@@ -190,7 +186,7 @@ resource "aws_instance" "microservice_app" {
   }
 
   tags = {
-    Name = "Application_Server_${count.index + 1}"
+    Name = "Application_Server"
   }
 
 }
@@ -238,7 +234,7 @@ resource "aws_instance" "database" {
   ami                    = var.ami_id
   key_name               = "terraform"
   instance_type          = var.instance_type
-  availability_zone      = var.availability_zone_names[0]
+  availability_zone      = var.availability_zone_names
   vpc_security_group_ids = [aws_security_group.rds_sg.id]
   subnet_id              = aws_subnet.database-subnet.id
   user_data              = file("user_data.sh")
@@ -256,41 +252,26 @@ resource "aws_instance" "database" {
 
 }
 
-#Create Application Load Balancer
-resource "aws_lb" "external-elb" {
-  name               = "External-LB"
-  internal           = false
-  load_balancer_type = "application"
-  security_groups    = [aws_security_group.allow_web_traffic.id]
-  subnets            = [aws_subnet.jumia-public-subnet[0].id, aws_subnet.jumia-public-subnet[1].id]
-}
 
-resource "aws_lb_target_group" "external-elb" {
-  name     = "ALB-TG"
-  port     = 80
-  protocol = "HTTP"
-  vpc_id   = aws_vpc.jumia_vpc.id
+# Create Load Balancer Server Instance
+resource "aws_instance" "load_balancer" {
+  ami                    = var.ami_id
+  key_name               = "terraform"
+  instance_type          = var.instance_type
+  availability_zone      = var.availability_zone_names
+  vpc_security_group_ids = [aws_security_group.allow_web_traffic.id]
+  subnet_id              = aws_subnet.jumia-public-subnet.id
+  user_data              = file("user_data.sh")
 
-}
-
-resource "aws_lb_target_group_attachment" "external-elb" {
-  count            = var.item_count
-  target_group_arn = aws_lb_target_group.external-elb.arn
-  target_id        = aws_instance.microservice_app[count.index].id
-  port             = 80
-
-  depends_on = [
-    aws_instance.microservice_app[1]
-  ]
-}
-
-resource "aws_lb_listener" "external-elb" {
-  load_balancer_arn = aws_lb.external-elb.arn
-  port              = "80"
-  protocol          = "HTTP"
-
-  default_action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.external-elb.arn
+  connection {
+    type        = "ssh"
+    host        = self.public_ip
+    user        = "ubuntu"
+    private_key = file(var.aws_key_pair)
   }
+
+  tags = {
+    Name = "Load_Balancer_Server"
+  }
+
 }

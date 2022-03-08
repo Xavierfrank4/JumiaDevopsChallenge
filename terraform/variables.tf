@@ -9,7 +9,7 @@ variable "project_name" {
 variable "item_count" {
   description = "default count used to set AZs and instances"
   type        = number
-  default     = 2
+  default     = 1
 }
 
 #Jumia VPC variables
@@ -20,18 +20,18 @@ variable "vpc_cidr" {
 }
 
 variable "availability_zone_names" {
-  type    = list(string)
-  default = ["eu-west-2a", "eu-west-2b"]
+  type    = string
+  default = "eu-west-2a"
 }
 
 variable "public_subnet_cidr" {
-  type    = list(string)
-  default = ["10.0.1.0/24", "10.0.2.0/24"]
+  type    = string
+  default = "10.0.1.0/24"
 }
 
 variable "application_subnet_cidr" {
-  type    = list(string)
-  default = ["10.0.5.0/24", "10.0.6.0/24"]
+  type    = string
+  default = "10.0.6.0/24"
 }
 
 variable "database_subnet_cidr" {
