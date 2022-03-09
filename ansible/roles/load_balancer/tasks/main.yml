@@ -1,3 +1,29 @@
+# UFW setup
+
+- name: Allow ssh traffic
+  ufw:
+    rule: allow
+    port: "{{ ssh_port }}"
+    proto: tcp
+
+- name: Allow http traffic port 80
+  ufw:
+    rule: allow
+    port: 80
+    proto: tcp
+
+- name: Allow https traffic port 443
+  ufw:
+    rule: allow
+    port: 443
+    proto: tcp
+
+- name: Enable firewall
+  ufw:
+    state: enabled
+    policy: deny
+    direction: incoming
+
 - name: Ensure Nginx is installed and it is the latest version
   apt:
     name: nginx

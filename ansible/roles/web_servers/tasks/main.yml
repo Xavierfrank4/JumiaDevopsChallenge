@@ -1,3 +1,32 @@
+# UFW setup
+
+- name: Allow ssh traffic
+  ufw:
+    rule: allow
+    port: "{{ ssh_port }}"
+    proto: tcp
+
+- name: Allow tcp traffic port 8080
+  ufw:
+    rule: allow
+    from_ip: 35.177.0.107
+    port: 8080
+    proto: tcp
+
+- name: Allow tcp traffic port 8081
+  ufw:
+    rule: allow
+    from_ip: 35.177.0.107
+    port: 8081
+    proto: tcp
+
+- name: Enable firewall
+  ufw:
+    state: enabled
+    policy: deny
+    direction: incoming
+
+# Setup packages
 - name: Install pip
   apt:
     update_cache: yes
