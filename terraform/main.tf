@@ -147,6 +147,24 @@ resource "aws_security_group" "microservice_sg" {
   }
 
   ingress {
+    description     = "Custom TCP from ALB"
+    from_port       = 8080
+    to_port         = 8080
+    protocol        = "tcp"
+    security_groups = [aws_security_group.allow_web_traffic.id]
+
+  }
+
+  ingress {
+    description     = "Custom TCP from ALB"
+    from_port       = 8081
+    to_port         = 8081
+    protocol        = "tcp"
+    security_groups = [aws_security_group.allow_web_traffic.id]
+
+  }
+
+  ingress {
     description = "Allow SSH"
     from_port   = 1337
     to_port     = 1337

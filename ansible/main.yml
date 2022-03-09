@@ -47,6 +47,13 @@
         name: "{{ sys_packages }}"
         state: latest
 
+- hosts: web_servers
+  become: yes
+  vars_files:
+    - vars.yml
+  roles:
+    - web_servers
+
 - hosts: load_balancer
   become: yes
   vars_files:
@@ -60,10 +67,3 @@
     - vars.yml
   roles:
     - db_servers
-
-- hosts: web_servers
-  become: yes
-  vars_files:
-    - vars.yml
-  roles:
-    - web_servers

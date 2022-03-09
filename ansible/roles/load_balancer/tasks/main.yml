@@ -12,7 +12,7 @@
 
 - name: Copy the Nginx config file and restart nginx
   copy:
-    src: ansible/roles/load_balancer/nginx.cfg
+    src: nginx.cfg
     dest: /etc/nginx/sites-available/nginx.cfg
   become: yes
 
