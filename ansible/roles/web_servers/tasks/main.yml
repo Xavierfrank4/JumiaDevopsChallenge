@@ -44,8 +44,8 @@
 - name: Check if container is running
   shell: docker ps
 
-- name: run docker image validator fontend
-  shell: docker run -dit --name validator-frontend -p 8081:8081 thepsalmist/validator-frontend-image:v1
+# - name: run docker image validator fontend
+#   shell: docker run -dit --name validator-frontend -p 8081:8081 thepsalmist/validator-frontend-image:v1
 
 - name: show running images
   shell: docker images
