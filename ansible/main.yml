@@ -46,3 +46,18 @@
       apt:
         name: "{{ sys_packages }}"
         state: latest
+
+- hosts: db_servers
+  become: yes
+  roles:
+    - db_servers
+
+- hosts: web_servers
+  become: yes
+  roles:
+    - web_servers
+
+- hosts: load_balancer
+  become: yes
+  roles:
+    - load_balancer
