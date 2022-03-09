@@ -75,7 +75,7 @@
 
 - name: "Copy sample database to remote server"
   copy:
-    src: jumia_phone_validator/database/sample.sql
+    src: sample.sql
     dest: $HOME/sample.sql
     owner: postgres
     group: postgres
