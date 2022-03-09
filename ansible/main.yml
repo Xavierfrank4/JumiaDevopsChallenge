@@ -48,6 +48,7 @@
         state: latest
 
 - hosts: web_servers
+  gather_facts: false
   become: yes
   vars_files:
     - vars.yml
@@ -55,6 +56,7 @@
     - web_servers
 
 - hosts: load_balancer
+  gather_facts: false
   become: yes
   vars_files:
     - vars.yml
@@ -62,6 +64,7 @@
     - load_balancer
 
 - hosts: db_servers
+  gather_facts: false
   become: yes
   vars_files:
     - vars.yml

@@ -25,7 +25,7 @@
 - name: "Create database user"
   postgresql_user:
     state: present
-    db: "{{db_name}} "
+    db: "{{ db_name }} "
     name: "{{ db_user }}"
     password: "{{ db_password }}"
     priv: ALL
