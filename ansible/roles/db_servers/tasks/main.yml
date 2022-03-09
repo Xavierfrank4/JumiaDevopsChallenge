@@ -25,7 +25,7 @@
 - name: "Create database user"
   postgresql_user:
     state: present
-    db: "{{ db_name }} "
+    db: "{{ db_name }}"
     name: "{{ db_user }}"
     password: "{{ db_password }}"
     priv: ALL
@@ -37,6 +37,8 @@
     state: present
     name: "{{ db_user }}"
     role_attr_flags: NOSUPERUSER,NOCREATEDB
+  become: yes
+  become_user: postgres
 
 - name: "Allow md5 connection to the db user"
   postgresql_pg_hba:
